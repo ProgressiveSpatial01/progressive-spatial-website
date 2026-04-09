@@ -71,8 +71,7 @@ const sectors = [
   },
 ];
 
-const stats = [
-];
+const stats: { label: string; value: string }[] = [];
 
 const projects = [
   {
