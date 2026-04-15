@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-// trigger redeploy
+// trigger redeploy again
 // app/page.tsx – Progressive Spatial homepage (light theme)
 
 const LOGO_SRC = "/ps-logo.png";
