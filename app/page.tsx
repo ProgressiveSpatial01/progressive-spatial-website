@@ -492,7 +492,7 @@ function WhySection() {
                   Who are we?
                 </p>
                 <h3 className="mt-1 text-2xl font-semibold text-slate-900">
-                  Meet the directors behind Progressive Spatial
+                  Meet the Team behind Progressive Spatial
                 </h3>
               </div>
 
