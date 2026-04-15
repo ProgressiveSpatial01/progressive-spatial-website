@@ -579,309 +579,316 @@ function ContactCTA({
 }) {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [cvStatus, setCvStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+
   return (
-    <section
-      id="contact"
-      className="mt-4 grid gap-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-md shadow-slate-200/80 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]"
-    >
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
-          Ready to talk about your next project?
-        </h2>
-        <p className="max-w-xl text-sm text-slate-700">
-          Tell us a bit about your civil works package and where you need
-          survey support. We&apos;ll come back to you quickly with availability and
-          next steps.
-        </p>
-        <ul className="space-y-1 text-xs text-slate-700">
-          <li>• Road, subdivision or infrastructure project scope</li>
-          <li>• Site location and program dates</li>
-          <li>• Any specific deliverables or QA requirements</li>
-        </ul>
-      </div>
-
-<form
-  className="space-y-3 text-sm"
-  onSubmit={async (e) => {
-    e.preventDefault();
-    setStatus("sending");
-
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const payload = {
-      formType: "general",
-      name: formData.get("name"),
-      company: formData.get("company"),
-      email: formData.get("email"),
-      project: formData.get("project"),
-      message: formData.get("message"),
-    };
-
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (res.ok) {
-      setStatus("success");
-      form.reset();
-    } else {
-      setStatus("error");
-    }
-  }}
->
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1">
-            <label htmlFor="name" className="text-xs text-slate-700">
-              Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-              placeholder="Your name"
-            />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="company" className="text-xs text-slate-700">
-              Company
-            </label>
-            <input
-              id="company"
-              name="company"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-              placeholder="Civil contractor / organisation"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <label htmlFor="email" className="text-xs text-slate-700">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-            placeholder="name@company.com"
-          />
-        </div>
-
-        <div className="space-y-1">
-          <label htmlFor="project" className="text-xs text-slate-700">
-            Project &amp; location
-          </label>
-          <input
-            id="project"
-            name="project"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-            placeholder="Project name and site location"
-          />
-        </div>
-
-        <div className="space-y-1">
-          <label htmlFor="message" className="text-xs text-slate-700">
-            Scope / requirements
-          </label>
-          <textarea
-            id="message"
-            name="message"
-            rows={4}
-            className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-            placeholder="Tell us about the works, program and where you need survey support."
-          />
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-<button
-  type="submit"
-  disabled={status === "sending"}
-  className="inline-flex items-center justify-center rounded-full bg-emerald-800 px-6 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-800/30 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
->
-  {status === "sending" ? "Sending..." : "Submit enquiry"}
-</button>
-{status === "success" && (
-  <p className="text-xs font-medium text-emerald-700">
-    Thanks — your enquiry has been sent successfully.
-  </p>
-)}
-
-{status === "error" && (
-  <p className="text-xs font-medium text-red-600">
-    Something went wrong. Please try again.
-  </p>
-)}
-          <p className="text-[11px] text-slate-500">
-            Prefer to talk directly? Add your mobile and we&apos;ll call you.
-          </p>
-        </div>
-      </form>
-    </section>
-  );
-  {showCvForm && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 backdrop-blur-sm">
-    <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-800">
-            Careers
-          </p>
-          <h3 className="mt-1 text-2xl font-semibold text-slate-900">
-            Send us your CV
-          </h3>
-        </div>
-        <button
-          type="button"
-          onClick={() => setShowCvForm(false)}
-          className="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
-        >
-          Close
-        </button>
-      </div>
-
-      <form
-        className="space-y-4"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setCvStatus("sending");
-
-          const form = e.currentTarget;
-          const formData = new FormData(form);
-
-          const payload = {
-            formType: "career",
-            name: formData.get("name"),
-            email: formData.get("email"),
-            phone: formData.get("phone"),
-            linkedin: formData.get("linkedin"),
-            resumeLink: formData.get("resumeLink"),
-            message: formData.get("message"),
-          };
-
-          const res = await fetch("/api/contact", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          });
-
-          if (res.ok) {
-            setCvStatus("success");
-            form.reset();
-          } else {
-            setCvStatus("error");
-          }
-        }}
+    <>
+      <section
+        id="contact"
+        className="mt-4 grid gap-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-md shadow-slate-200/80 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]"
       >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1">
-            <label htmlFor="cv-name" className="text-xs text-slate-700">
-              Name
-            </label>
-            <input
-              id="cv-name"
-              name="name"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-              placeholder="Your name"
-            />
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
+            Ready to talk about your next project?
+          </h2>
+          <p className="max-w-xl text-sm text-slate-700">
+            Tell us a bit about your civil works package and where you need
+            survey support. We&apos;ll come back to you quickly with availability and
+            next steps.
+          </p>
+          <ul className="space-y-1 text-xs text-slate-700">
+            <li>• Road, subdivision or infrastructure project scope</li>
+            <li>• Site location and program dates</li>
+            <li>• Any specific deliverables or QA requirements</li>
+          </ul>
+        </div>
+
+        <form
+          className="space-y-3 text-sm"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setStatus("sending");
+
+            const form = e.currentTarget;
+            const formData = new FormData(form);
+
+            const payload = {
+              formType: "general",
+              name: formData.get("name"),
+              company: formData.get("company"),
+              email: formData.get("email"),
+              project: formData.get("project"),
+              message: formData.get("message"),
+            };
+
+            const res = await fetch("/api/contact", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            if (res.ok) {
+              setStatus("success");
+              setStatus("success");
+              form.reset();
+            } else {
+              setStatus("error");
+            }
+          }}
+        >
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label htmlFor="name" className="text-xs text-slate-700">
+                Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+                placeholder="Your name"
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="company" className="text-xs text-slate-700">
+                Company
+              </label>
+              <input
+                id="company"
+                name="company"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+                placeholder="Civil contractor / organisation"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="cv-email" className="text-xs text-slate-700">
+            <label htmlFor="email" className="text-xs text-slate-700">
               Email
             </label>
             <input
-              id="cv-email"
+              id="email"
               name="email"
               type="email"
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-              placeholder="name@email.com"
-            />
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1">
-            <label htmlFor="cv-phone" className="text-xs text-slate-700">
-              Phone
-            </label>
-            <input
-              id="cv-phone"
-              name="phone"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-              placeholder="Your mobile"
+              placeholder="name@company.com"
             />
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="cv-linkedin" className="text-xs text-slate-700">
-              LinkedIn
+            <label htmlFor="project" className="text-xs text-slate-700">
+              Project &amp; location
             </label>
             <input
-              id="cv-linkedin"
-              name="linkedin"
+              id="project"
+              name="project"
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-              placeholder="LinkedIn profile URL"
+              placeholder="Project name and site location"
             />
           </div>
+
+          <div className="space-y-1">
+            <label htmlFor="message" className="text-xs text-slate-700">
+              Scope / requirements
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows={4}
+              className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+              placeholder="Tell us about the works, program and where you need survey support."
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <button
+              type="submit"
+              disabled={status === "sending"}
+              className="inline-flex items-center justify-center rounded-full bg-emerald-800 px-6 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-800/30 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {status === "sending" ? "Sending..." : "Submit enquiry"}
+            </button>
+
+            <p className="text-[11px] text-slate-500">
+              Prefer to talk directly? Add your mobile and we&apos;ll call you.
+            </p>
+          </div>
+
+          {status === "success" && (
+            <p className="text-xs font-medium text-emerald-700">
+              Thanks — your enquiry has been sent successfully.
+            </p>
+          )}
+
+          {status === "error" && (
+            <p className="text-xs font-medium text-red-600">
+              Something went wrong. Please try again.
+            </p>
+          )}
+        </form>
+      </section>
+
+      {showCvForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-800">
+                  Careers
+                </p>
+                <h3 className="mt-1 text-2xl font-semibold text-slate-900">
+                  Send us your CV
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCvForm(false)}
+                className="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+              >
+                Close
+              </button>
+            </div>
+
+            <form
+              className="space-y-4"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setCvStatus("sending");
+
+                const form = e.currentTarget;
+                const formData = new FormData(form);
+
+                const payload = {
+                  formType: "career",
+                  name: formData.get("name"),
+                  email: formData.get("email"),
+                  phone: formData.get("phone"),
+                  linkedin: formData.get("linkedin"),
+                  resumeLink: formData.get("resumeLink"),
+                  message: formData.get("message"),
+                };
+
+                const res = await fetch("/api/contact", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(payload),
+                });
+
+                if (res.ok) {
+                  setCvStatus("success");
+                  form.reset();
+                } else {
+                  setCvStatus("error");
+                }
+              }}
+            >
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <label htmlFor="cv-name" className="text-xs text-slate-700">
+                    Name
+                  </label>
+                  <input
+                    id="cv-name"
+                    name="name"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+                    placeholder="Your name"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label htmlFor="cv-email" className="text-xs text-slate-700">
+                    Email
+                  </label>
+                  <input
+                    id="cv-email"
+                    name="email"
+                    type="email"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+                    placeholder="name@email.com"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <label htmlFor="cv-phone" className="text-xs text-slate-700">
+                    Phone
+                  </label>
+                  <input
+                    id="cv-phone"
+                    name="phone"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+                    placeholder="Your mobile"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label htmlFor="cv-linkedin" className="text-xs text-slate-700">
+                    LinkedIn
+                  </label>
+                  <input
+                    id="cv-linkedin"
+                    name="linkedin"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+                    placeholder="LinkedIn profile URL"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="cv-resume" className="text-xs text-slate-700">
+                  CV link
+                </label>
+                <input
+                  id="cv-resume"
+                  name="resumeLink"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+                  placeholder="Link to CV file or cloud document"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="cv-message" className="text-xs text-slate-700">
+                  Message
+                </label>
+                <textarea
+                  id="cv-message"
+                  name="message"
+                  rows={4}
+                  className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+                  placeholder="Tell us a little about yourself and the type of opportunity you're looking for."
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                <button
+                  type="submit"
+                  disabled={cvStatus === "sending"}
+                  className="inline-flex items-center justify-center rounded-full bg-emerald-800 px-6 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-800/30 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {cvStatus === "sending" ? "Sending..." : "Submit CV"}
+                </button>
+              </div>
+
+              {cvStatus === "success" && (
+                <p className="text-xs font-medium text-emerald-700">
+                  Thanks — your CV submission has been sent successfully.
+                </p>
+              )}
+
+              {cvStatus === "error" && (
+                <p className="text-xs font-medium text-red-600">
+                  Something went wrong. Please try again.
+                </p>
+              )}
+            </form>
+          </div>
         </div>
-
-        <div className="space-y-1">
-          <label htmlFor="cv-resume" className="text-xs text-slate-700">
-            CV link
-          </label>
-          <input
-            id="cv-resume"
-            name="resumeLink"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-            placeholder="Link to CV file or cloud document"
-          />
-        </div>
-
-        <div className="space-y-1">
-          <label htmlFor="cv-message" className="text-xs text-slate-700">
-            Message
-          </label>
-          <textarea
-            id="cv-message"
-            name="message"
-            rows={4}
-            className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
-            placeholder="Tell us a little about yourself and the type of opportunity you're looking for."
-          />
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-          <button
-            type="submit"
-            disabled={cvStatus === "sending"}
-            className="inline-flex items-center justify-center rounded-full bg-emerald-800 px-6 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-800/30 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {cvStatus === "sending" ? "Sending..." : "Submit CV"}
-          </button>
-        </div>
-
-        {cvStatus === "success" && (
-          <p className="text-xs font-medium text-emerald-700">
-            Thanks — your CV submission has been sent successfully.
-          </p>
-        )}
-
-        {cvStatus === "error" && (
-          <p className="text-xs font-medium text-red-600">
-            Something went wrong. Please try again.
-          </p>
-        )}
-      </form>
-    </div>
-  </div>
-)}
+      )}
+    </>
+  );
 }
 
 function Footer() {
