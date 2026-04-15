@@ -123,6 +123,7 @@ const values = [
 ];
 
 export default function ProgressiveSpatialHomepage() {
+  const [showCvForm, setShowCvForm] = useState(false);
   return (
     <div className="min-h-screen overflow-hidden bg-slate-50 text-slate-900">
       <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-64 bg-gradient-to-b from-emerald-800/10 via-emerald-700/5 to-transparent" />
@@ -145,8 +146,8 @@ export default function ProgressiveSpatialHomepage() {
           <Sectors />
           <Projects />
           <WhySection />
-          <Careers />
-          <ContactCTA />
+          <Careers onOpenCvForm={() => setShowCvForm(true)} />
+          <ContactCTA showCvForm={showCvForm} setShowCvForm={setShowCvForm} />
         </main>
         <Footer />
       </div>
@@ -532,7 +533,7 @@ function WhySection() {
   );
 }
 
-function Careers() {
+function Careers({ onOpenCvForm }: { onOpenCvForm: () => void }) {
   return (
     <section id="careers" className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -557,18 +558,27 @@ function Careers() {
             from you.
           </p>
         </div>
-        <a
-          href="#contact"
-          className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-2 text-xs font-medium text-slate-900 transition hover:border-emerald-800 hover:text-emerald-800"
-        >
-          Send us your CV
-        </a>
+<button
+  type="button"
+  onClick={onOpenCvForm}
+  className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-2 text-xs font-medium text-slate-900 transition hover:border-emerald-800 hover:text-emerald-800"
+>
+  Send us your CV
+</button>
       </div>
     </section>
   );
 }
 
-function ContactCTA() {
+function ContactCTA({
+  showCvForm,
+  setShowCvForm,
+}: {
+  showCvForm: boolean;
+  setShowCvForm: (value: boolean) => void;
+}) {
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [cvStatus, setCvStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   return (
     <section
       id="contact"
@@ -590,10 +600,11 @@ function ContactCTA() {
         </ul>
       </div>
 
-      <form
+<form
   className="space-y-3 text-sm"
   onSubmit={async (e) => {
     e.preventDefault();
+    setStatus("sending");
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -616,10 +627,10 @@ function ContactCTA() {
     });
 
     if (res.ok) {
-      alert("Thanks — your enquiry has been sent.");
+      setStatus("success");
       form.reset();
     } else {
-      alert("Something went wrong.");
+      setStatus("error");
     }
   }}
 >
@@ -687,12 +698,24 @@ function ContactCTA() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center rounded-full bg-emerald-800 px-6 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-800/30 transition hover:bg-emerald-700"
-          >
-            Submit enquiry
-          </button>
+<button
+  type="submit"
+  disabled={status === "sending"}
+  className="inline-flex items-center justify-center rounded-full bg-emerald-800 px-6 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-800/30 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {status === "sending" ? "Sending..." : "Submit enquiry"}
+</button>
+{status === "success" && (
+  <p className="text-xs font-medium text-emerald-700">
+    Thanks — your enquiry has been sent successfully.
+  </p>
+)}
+
+{status === "error" && (
+  <p className="text-xs font-medium text-red-600">
+    Something went wrong. Please try again.
+  </p>
+)}
           <p className="text-[11px] text-slate-500">
             Prefer to talk directly? Add your mobile and we&apos;ll call you.
           </p>
@@ -700,6 +723,165 @@ function ContactCTA() {
       </form>
     </section>
   );
+  {showCvForm && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 backdrop-blur-sm">
+    <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-800">
+            Careers
+          </p>
+          <h3 className="mt-1 text-2xl font-semibold text-slate-900">
+            Send us your CV
+          </h3>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowCvForm(false)}
+          className="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+        >
+          Close
+        </button>
+      </div>
+
+      <form
+        className="space-y-4"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setCvStatus("sending");
+
+          const form = e.currentTarget;
+          const formData = new FormData(form);
+
+          const payload = {
+            formType: "career",
+            name: formData.get("name"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
+            linkedin: formData.get("linkedin"),
+            resumeLink: formData.get("resumeLink"),
+            message: formData.get("message"),
+          };
+
+          const res = await fetch("/api/contact", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (res.ok) {
+            setCvStatus("success");
+            form.reset();
+          } else {
+            setCvStatus("error");
+          }
+        }}
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1">
+            <label htmlFor="cv-name" className="text-xs text-slate-700">
+              Name
+            </label>
+            <input
+              id="cv-name"
+              name="name"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+              placeholder="Your name"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="cv-email" className="text-xs text-slate-700">
+              Email
+            </label>
+            <input
+              id="cv-email"
+              name="email"
+              type="email"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+              placeholder="name@email.com"
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1">
+            <label htmlFor="cv-phone" className="text-xs text-slate-700">
+              Phone
+            </label>
+            <input
+              id="cv-phone"
+              name="phone"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+              placeholder="Your mobile"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="cv-linkedin" className="text-xs text-slate-700">
+              LinkedIn
+            </label>
+            <input
+              id="cv-linkedin"
+              name="linkedin"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+              placeholder="LinkedIn profile URL"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="cv-resume" className="text-xs text-slate-700">
+            CV link
+          </label>
+          <input
+            id="cv-resume"
+            name="resumeLink"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+            placeholder="Link to CV file or cloud document"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="cv-message" className="text-xs text-slate-700">
+            Message
+          </label>
+          <textarea
+            id="cv-message"
+            name="message"
+            rows={4}
+            className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none ring-emerald-700/30 placeholder:text-slate-400 focus:border-emerald-800 focus:ring-2"
+            placeholder="Tell us a little about yourself and the type of opportunity you're looking for."
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <button
+            type="submit"
+            disabled={cvStatus === "sending"}
+            className="inline-flex items-center justify-center rounded-full bg-emerald-800 px-6 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-800/30 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {cvStatus === "sending" ? "Sending..." : "Submit CV"}
+          </button>
+        </div>
+
+        {cvStatus === "success" && (
+          <p className="text-xs font-medium text-emerald-700">
+            Thanks — your CV submission has been sent successfully.
+          </p>
+        )}
+
+        {cvStatus === "error" && (
+          <p className="text-xs font-medium text-red-600">
+            Something went wrong. Please try again.
+          </p>
+        )}
+      </form>
+    </div>
+  </div>
+)}
 }
 
 function Footer() {
