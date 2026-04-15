@@ -590,7 +590,39 @@ function ContactCTA() {
         </ul>
       </div>
 
-      <form className="space-y-3 text-sm">
+      <form
+  className="space-y-3 text-sm"
+  onSubmit={async (e) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      formType: "general",
+      name: formData.get("name"),
+      company: formData.get("company"),
+      email: formData.get("email"),
+      project: formData.get("project"),
+      message: formData.get("message"),
+    };
+
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      alert("Thanks — your enquiry has been sent.");
+      form.reset();
+    } else {
+      alert("Something went wrong.");
+    }
+  }}
+>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1">
             <label htmlFor="name" className="text-xs text-slate-700">
